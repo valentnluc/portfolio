@@ -1,0 +1,299 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GridItem from "../components/GridItem.astro";
+import { getCollection } from "astro:content";
+
+import { marked } from "marked";
+
+// Get blog posts sorted by order (only 4 blogs)
+const blogs = await getCollection("projects");
+const sortedBlogs = blogs
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+
+// Zen decorations list
+const zenDecorations = [
+  "lines",
+  "grid",
+  "waves",
+  "circles",
+  "waves",
+  "particles",
+  "spiral",
+  "grid",
+  "constellation",
+  "hexagons",
+  "matrix",
+  "breathing",
+];
+
+// Prepare blog data with rendered content
+const blogItems = await Promise.all(
+  sortedBlogs.map(async (blog, i) => ({
+    type: "blog" as const,
+    data: {
+      ...blog.data,
+      slug: blog.slug,
+      content: await marked.parse(blog.body),
+      decoration: zenDecorations[i % zenDecorations.length],
+    },
+  })),
+);
+
+// Static cells
+const nameCell = {
+  type: "name" as const,
+  data: {
+    firstName: "VALENTIN",
+    lastName: "LUCARINI",
+    subtitle: "Control Analyst",
+  },
+};
+
+const socialCell = {
+  type: "social" as const,
+  data: {
+    linkedin: "https://linkedin.com/in/valentin-lucarini",
+    github: "https://github.com/valentin-lucarini",
+    email: "hello@valentin.dev",
+    x: "https://x.com/valentin",
+  },
+};
+
+// Empty cell placeholder
+const emptyCell = {
+  type: "easter" as const,
+  data: {},
+};
+
+// Open To Work cell
+const openToWorkCell = {
+  type: "opentowork" as const,
+  data: {},
+};
+
+// About cell
+const aboutCell = {
+  type: "about" as const,
+  data: {
+    text: "Building digital products that solve real problems. Focused on performance, design, and user experience.",
+  },
+};
+
+// Projects cell
+const projectsCell = {
+  type: "project" as const,
+  data: {},
+};
+
+// Build 4x3 grid (12 cells)
+// Row 1: name, otw, about, project
+// Row 2: blog0, blog1, blog2, blog3 (All blogs side by side)
+// Row 3: empty, empty, empty, social
+// Wide empty cell (placeholder for stack/etc)
+const wideCell = {
+  type: "stack" as const,
+  data: {},
+};
+
+// Build 4x3 grid (12 cells)
+// Row 1: name, otw, about, project
+// Row 2: blog0, blog1, blog2, blog3 (All blogs side by side)
+// Row 3: wideCell (spans 3), social
+const gridCells = [
+  nameCell, // 0
+  openToWorkCell, // 1
+  aboutCell, // 2
+  projectsCell, // 3
+
+  blogItems[0], // 4
+  blogItems[1], // 5
+  blogItems[2], // 6
+  blogItems[3], // 7
+
+  wideCell, // 8 (spans 3)
+  socialCell, // 11
+];
+---
+
+<BaseLayout title="Valentin Lucarini." description="Portfolio">
+  <main class="bento-grid">
+    {
+      gridCells.map((cell, index) => (
+        <GridItem type={cell.type} data={cell.data} index={index} />
+      ))
+    }
+  </main>
+
+  <!-- Hidden modals for each blog -->
+  <div id="modal-container"></div>
+
+  <!-- Blog data for JS -->
+  <script
+    define:vars={{
+      blogData: blogItems.map((b) => ({
+        slug: b.data.slug,
+        title: b.data.title,
+        description: b.data.description,
+        content: b.data.content,
+      })),
+    }}
+  >
+    // Store blog data globally
+    window.__blogData = blogData;
+  </script>
+
+  <script>
+    import vegaEmbed from "vega-embed";
+
+    // Handle blog cell clicks
+    document.querySelectorAll('[data-type="blog"]').forEach((cell) => {
+      cell.addEventListener("click", () => {
+        const slug = cell.getAttribute("data-slug");
+        const blog = window.__blogData.find((b) => b.slug === slug);
+
+        if (blog) {
+          openModal(blog);
+        }
+      });
+    });
+
+    async function openModal(blog) {
+      const container = document.getElementById("modal-container");
+
+      container.innerHTML = `
+        <div class="modal-overlay" id="modal-${blog.slug}">
+          <button class="modal-close">&times;</button>
+          <article class="modal-content">
+            <header class="modal-header">
+              <h2>${blog.title}</h2>
+              <p>${blog.description}</p>
+            </header>
+            <div class="modal-body">${blog.content}</div>
+          </article>
+        </div>
+      `;
+
+      // Render Vega Charts
+      const vegaBlocks = container.querySelectorAll("pre code.language-vega");
+      for (const block of vegaBlocks) {
+        try {
+          const spec = JSON.parse(block.textContent);
+          const div = document.createElement("div");
+          div.style.width = "100%";
+          div.style.display = "flex";
+          div.style.justifyContent = "center";
+
+          // Replace the <pre> tag (parent of code) with the new div
+          block.parentElement.replaceWith(div);
+
+          await vegaEmbed(div, spec, {
+            actions: false,
+            theme: "dark",
+            renderer: "svg",
+            config: {
+              background: "transparent",
+              style: {
+                "guide-label": { fill: "#f5f5f5" },
+                "guide-title": { fill: "#f5f5f5" },
+                "group-title": { fill: "#f5f5f5" },
+              },
+            },
+          });
+        } catch (e) {
+          console.error("Failed to render Vega chart", e);
+        }
+      }
+
+      // Add close handlers
+      const modal = container.querySelector(".modal-overlay");
+      const closeBtn = container.querySelector(".modal-close");
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) container.innerHTML = "";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        container.innerHTML = "";
+      });
+
+      document.addEventListener("keydown", function escHandler(e) {
+        if (e.key === "Escape") {
+          container.innerHTML = "";
+          document.removeEventListener("keydown", escHandler);
+        }
+      });
+    }
+  </script>
+
+  <!-- ASCII Scramble Effect -->
+  <script>
+    const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!?<>[]{}";
+
+    function scrambleText(element: HTMLElement, originalText: string) {
+      let iteration = 0;
+      const interval = setInterval(() => {
+        element.textContent = originalText
+          .split("")
+          .map((char, index) => {
+            if (char === " ") return " ";
+            if (index < iteration) return originalText[index];
+            return CHARS[Math.floor(Math.random() * CHARS.length)];
+          })
+          .join("");
+
+        iteration += 1 / 3;
+        if (iteration >= originalText.length) {
+          element.textContent = originalText;
+          clearInterval(interval);
+        }
+      }, 30);
+
+      return interval;
+    }
+
+    // Apply to name and subtitle
+    const nameCell = document.querySelector(".bento-cell.cell-name");
+    const nameFirst = document.querySelector(".name-first") as HTMLElement;
+    const nameLast = document.querySelector(".name-last") as HTMLElement;
+    const nameSubtitle = document.querySelector(
+      ".name-subtitle",
+    ) as HTMLElement;
+
+    if (nameCell && nameFirst && nameLast && nameSubtitle) {
+      const originalFirst = nameFirst.textContent || "";
+      const originalLast = nameLast.textContent || "";
+      const originalSubtitle = nameSubtitle.textContent || "";
+
+      let firstInterval: number;
+      let lastInterval: number;
+      let subtitleInterval: number;
+
+      nameCell.addEventListener("mouseenter", () => {
+        firstInterval = scrambleText(nameFirst, originalFirst);
+        lastInterval = scrambleText(nameLast, originalLast);
+        subtitleInterval = scrambleText(nameSubtitle, originalSubtitle);
+      });
+
+      nameCell.addEventListener("mouseleave", () => {
+        clearInterval(firstInterval);
+        clearInterval(lastInterval);
+        clearInterval(subtitleInterval);
+        nameFirst.textContent = originalFirst;
+        nameLast.textContent = originalLast;
+        nameSubtitle.textContent = originalSubtitle;
+      });
+    }
+
+    // Open To Work Theme Toggle
+    const otwCell = document.querySelector(".cell-opentowork");
+    if (otwCell) {
+      otwCell.addEventListener("mouseenter", () => {
+        document.body.classList.add("theme-green");
+      });
+      otwCell.addEventListener("mouseleave", () => {
+        document.body.classList.remove("theme-green");
+      });
+    }
+  </script>
+</BaseLayout>

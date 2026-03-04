@@ -1,0 +1,179 @@
+---
+/**
+ * GridItem - Bento cell component
+ * Types: name, blog, social, easter
+ */
+interface Props {
+    type:
+        | "name"
+        | "blog"
+        | "social"
+        | "easter"
+        | "opentowork"
+        | "about"
+        | "project"
+        | "stack";
+    data: any;
+    index: number;
+}
+
+import ZenDecoration from "./ZenDecoration.astro";
+
+const { type, data, index } = Astro.props;
+---
+
+<div
+    class={`bento-cell cell-${type}`}
+    style={`--i: ${index}`}
+    data-type={type}
+    data-slug={type === "blog" ? data.slug : undefined}
+>
+    {/* NAME CELL */}
+    {
+        type === "name" && (
+            <div class="name-container">
+                <div class="name-wrapper">
+                    <span class="name-first">{data.firstName}</span>
+                    <span class="name-last">{data.lastName}</span>
+                </div>
+                {data.subtitle && (
+                    <span class="name-subtitle">{data.subtitle}</span>
+                )}
+            </div>
+        )
+    }
+
+    {/* BLOG CELL */}
+    {
+        type === "blog" && (
+            <>
+                <div
+                    class="decoration-layer"
+                    style="position: absolute; inset: 0; z-index: 0;"
+                >
+                    <ZenDecoration type={data.decoration} />
+                </div>
+                {/* Image hidden as replaced by ZenDecoration
+                <img
+                    src={data.cover}
+                    alt={data.title}
+                    class="blog-image"
+                    loading="lazy"
+                />
+                */}
+                <div class="blog-overlay">
+                    <h3 class="blog-title">{data.title}</h3>
+                    <p class="blog-desc">{data.description}</p>
+                </div>
+            </>
+        )
+    }
+
+    {/* EMPTY CELL (placeholder) */}
+    {type === "easter" && <div class="cell-empty" />}
+
+    {/* OPEN TO WORK CELL */}
+    {
+        type === "opentowork" && (
+            <div class="otw-container">
+                <span class="otw-hint">HEY!</span>
+                <div class="otw-text">
+                    OPEN TO
+                    <br />
+                    WORK
+                </div>
+            </div>
+        )
+    }
+
+    {/* ABOUT CELL */}
+    {
+        type === "about" && (
+            <div class="about-container">
+                <div class="about-title">SOBRE MÍ</div>
+                <div class="about-content">{data.text}</div>
+            </div>
+        )
+    }
+
+    {/* PROJECTS CELL */}
+    {
+        type === "project" && (
+            <div class="project-container">
+                <div class="project-title">PROYECTOS</div>
+                <div class="project-arrow">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="80"
+                        height="80"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <line x1="12" y1="4" x2="12" y2="20" />
+                        <polyline points="18 14 12 20 6 14" />
+                    </svg>
+                </div>
+            </div>
+        )
+    }
+
+    {/* STACK CELL (Wide Placeholder) */}
+    {
+        type === "stack" && (
+            <div class="stack-container">
+                <div class="ascii-fish">{"><(((º>"}</div>
+            </div>
+        )
+    }
+
+    {/* SOCIAL CELL */}
+    {
+        type === "social" && (
+            <div class="cell-social">
+                <nav class="social-links">
+                    <a
+                        href={data.linkedin}
+                        target="_blank"
+                        rel="noopener"
+                        class="social-link"
+                    >
+                        LinkedIn
+                    </a>
+                    <a
+                        href={data.github}
+                        target="_blank"
+                        rel="noopener"
+                        class="social-link"
+                    >
+                        GitHub
+                    </a>
+                    <a href={`mailto:${data.email}`} class="social-link">
+                        Mail
+                    </a>
+                    <a
+                        href={data.x}
+                        target="_blank"
+                        rel="noopener"
+                        class="social-link"
+                    >
+                        X
+                    </a>
+                </nav>
+            </div>
+        )
+    }
+</div>
+
+<style>
+    .cell-blog {
+        cursor: pointer;
+    }
+
+    .cell-blog:active {
+        transform: scale(0.98);
+    }
+</style>
