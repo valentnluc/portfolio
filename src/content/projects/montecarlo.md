@@ -13,8 +13,6 @@ Los métodos usualmente usados para estudiar viabilidad de proyectos se apoyan e
 
 El Excel generalmente parte de una hipótesis y te devuelve qué tan bueno o malo va a ser el proyecto, pero no te habla del riesgo subyacente si esa hipótesis cambia. Básicamente te dice "el proyecto vale $X" asumiendo que todo sale exactamente como planeaste. Y todos sabemos que eso no pasa.
 
-![Matriz estática vs Flujo dinámico](/images/static-vs-dynamic.png)
-
 ---
 
 **¿Cómo funciona Montecarlo?**
@@ -24,8 +22,6 @@ La idea es simple: en vez de correr el modelo una sola vez con tus supuestos bas
 Eso te permite responder preguntas que el Excel estático no puede: ¿cuál es la probabilidad de que el proyecto pierda plata? ¿Cuál es el peor escenario realista? ¿Cuánto capital necesito en el peor caso?
 
 El método lo desarrollaron en el Laboratorio de Los Álamos en los años 40 para simular la difusión de neutrones en materiales de fisión nuclear. Ahora lo podés usar para evaluar si un lote es rentable o no.
-
-![Simulando cientos de escenarios con Montecarlo](/images/montecarlo-concept.png)
 
 ---
 
