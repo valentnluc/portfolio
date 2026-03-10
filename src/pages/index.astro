@@ -34,7 +34,10 @@ const blogItems = await Promise.all(
     data: {
       ...blog.data,
       slug: blog.slug,
-      content: await marked.parse(blog.body),
+      content: (await marked.parse(blog.body)).replace(
+        /src="\/images\//g,
+        'src="/portfolio/images/',
+      ),
       decoration: zenDecorations[i % zenDecorations.length],
     },
   })),
