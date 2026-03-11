@@ -114,9 +114,9 @@ a {
 .bento-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    height: 100vh;
-    width: 100vw;
+    grid-template-rows: repeat(3, minmax(250px, 1fr));
+    min-height: 100vh;
+    width: 100%;
     gap: 12px;
     padding: 12px;
     background: var(--black);
@@ -135,6 +135,10 @@ a {
 
     .bento-cell {
         min-height: 200px;
+    }
+
+    .bento-cell.cell-stack {
+        grid-column: span 2;
     }
 }
 
