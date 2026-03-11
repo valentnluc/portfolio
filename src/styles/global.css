@@ -114,9 +114,9 @@ a {
 
 .bento-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, minmax(250px, 1fr));
-    min-height: 100vh;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(220px, 1fr));
+    height: 100vh;
     width: 100%;
     gap: 12px;
     padding: 12px;
@@ -127,7 +127,7 @@ a {
 /* Tablet: 2 columns */
 @media (max-width: 1024px) {
     .bento-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-template-rows: auto;
         height: auto;
         min-height: 100vh;
@@ -136,10 +136,6 @@ a {
 
     .bento-cell {
         min-height: 200px;
-    }
-
-    .bento-cell.cell-stack {
-        grid-column: span 2;
     }
 }
 
@@ -710,6 +706,13 @@ body.theme-green {
 .bento-cell.cell-stack {
     grid-column: span 3;
     background: #111;
+}
+
+/* Tablet stack span override */
+@media (max-width: 1024px) {
+    .bento-cell.cell-stack {
+        grid-column: span 2;
+    }
 }
 
 /* Hide stack cell on mobile */
