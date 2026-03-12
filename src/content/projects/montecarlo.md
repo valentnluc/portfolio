@@ -44,7 +44,13 @@ Con un ejemplo concreto: un proyecto de 350m² de superficie, FOT 3.5, precio de
 
 ![Distribución de VAN y Riesgo](/images/distribucion_van_riesgo.png)
 
+---
 
+**Evolución del saldo bajo incertidumbre**
+
+Incluso si el proyecto es rentable, es vital entender el balance acumulado en el tiempo. La simulación nos muestra el rango de posibles flujos de caja mes a mes: desde el pozo de inversión máxima (capital de trabajo) hasta la recuperación mediante ventas. Comprender esta dispersión es clave para no quedarse sin liquidez a mitad de obra.
+
+---
 
 **Análisis de sensibilidad**
 
