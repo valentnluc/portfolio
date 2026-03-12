@@ -44,15 +44,7 @@ Con un ejemplo concreto: un proyecto de 350m² de superficie, FOT 3.5, precio de
 
 ![Distribución de VAN y Riesgo](/images/distribucion_van_riesgo.png)
 
----
 
-**Evolución del saldo con cono de incertidumbre**
-
-![Evolución del saldo](/images/montecarlo-cono.png)
-
-Lo que estás viendo acá es el balance acumulado del proyecto a lo largo del tiempo. La línea blanca es el escenario base el proyecto toca fondo cerca de los -$580K alrededor del mes 12, cuando la obra está en plena ejecución y las ventas todavía no compensan. El área gris es el cono de incertidumbre: muestra el rango de resultados posibles entre los 500 escenarios simulados. Cuanto más se abre el cono hacia el final, más dispersión hay en los resultados posibles. Un cono ancho hacia arriba es bueno; uno que se abre hacia abajo es una señal de alerta.
-
----
 
 **Análisis de sensibilidad**
 
@@ -72,4 +64,6 @@ El modelo no reemplaza un estudio de mercado, no predice el futuro y no tiene en
 
 El motor de cálculo está hecho en Python y el dashboard se construyó con Streamlit.
 
-<a href="https://modelo-riesgo-inmobiliario-n3th8r5ppruvgcj8ovtkyu.streamlit.app/" target="_blank" class="dashboard-btn">Probalo acá →</a>
+<div class="dashboard-btn-container">
+    <a href="https://modelo-riesgo-inmobiliario-n3th8r5ppruvgcj8ovtkyu.streamlit.app/" target="_blank" class="dashboard-btn">Probalo acá →</a>
+</div>
