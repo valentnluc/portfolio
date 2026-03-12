@@ -1,0 +1,27 @@
+--- src/styles/global.css
++++ src/styles/global.css
+@@ -139,10 +139,6 @@
+     .bento-cell {
+         min-height: 200px;
+     }
+-
+-    .bento-cell.cell-stack {
+-        grid-column: span 2;
+-    }
+ }
+ 
+ /* Mobile: 1 column */
+@@ -714,6 +710,12 @@
+     }
+ }
+ 
++/* Tablet stack span override */
++@media (max-width: 1024px) {
++    .bento-cell.cell-stack {
++        grid-column: span 2;
++    }
++}
++
+ .stack-container {
+     width: 100%;
+     height: 100%;

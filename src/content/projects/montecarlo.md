@@ -5,13 +5,17 @@ cover: "/covers/Montecarlo.png"
 order: 1
 ---
 
-**TL:DR** Hice una calculadora que corre 500 simulaciones de tu proyecto inmobiliario para decirte que hay un 31% de chances de que pierdas plata. El Excel te hubiera dicho que todo estaba bien.
+**TL:DR** Hice una calculadora que corre x simulaciones de tu proyecto inmobiliario para decirte que hay un 31% de chances de que pierdas plata. El Excel te hubiera dicho que todo estaba bien.
 
 ---
 
 Los métodos usualmente usados para estudiar viabilidad de proyectos se apoyan en el viejo y querido Excel. No son malos, pero se quedan un poco cortos y basándonos en métodos estadísticos podemos elevar bastante el nivel del análisis.
 
 El Excel generalmente parte de una hipótesis y te devuelve qué tan bueno o malo va a ser el proyecto, pero no te habla del riesgo subyacente si esa hipótesis cambia. Básicamente te dice "el proyecto vale $X" asumiendo que todo sale exactamente como planeaste. Y todos sabemos que eso no pasa.
+
+**Estocástico vs. Determinístico**
+
+![Modelo estocástico vs. determinístico](/images/estocastico_vs_deterministico.png)
 
 ---
 
@@ -35,6 +39,10 @@ La implementación permite calcular las variables típicas de un desarrollo inmo
 - **Break even** — en qué mes comienzo a ganar dinero
 
 Con un ejemplo concreto: un proyecto de 350m² de superficie, FOT 3.5, precio de venta de USD 1.800/m² y costo de construcción de USD 950/m², el modelo base arroja un VAN de $114K y una TIR del 26%. Suena bien. Pero cuando incorporás la incertidumbre (variación de precios del 15% y de costos del 10%) aparece que hay un 31% de probabilidad de que el proyecto tenga VAN negativo. Eso es lo que el Excel no te dice.
+
+**Distribución del VAN bajo riesgo**
+
+![Distribución de VAN y Riesgo](/images/distribucion_van_riesgo.png)
 
 ---
 
@@ -64,4 +72,4 @@ El modelo no reemplaza un estudio de mercado, no predice el futuro y no tiene en
 
 El motor de cálculo está hecho en Python y el dashboard se construyó con Streamlit.
 
-[**Probalo acá →**](https://modelo-riesgo-inmobiliario-n3th8r5ppruvgcj8ovtkyu.streamlit.app/)
+<a href="https://modelo-riesgo-inmobiliario-n3th8r5ppruvgcj8ovtkyu.streamlit.app/" target="_blank" class="dashboard-btn">Probalo acá →</a>
