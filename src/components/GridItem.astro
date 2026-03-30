@@ -1,7 +1,7 @@
 ---
 /**
  * GridItem - Bento cell component
- * Types: name, blog, social, easter
+ * Types: name, blog, social, easter, opentowork, about, project, stack
  */
 interface Props {
     type:
@@ -13,13 +13,14 @@ interface Props {
         | "about"
         | "project"
         | "stack";
-    data: any;
+    data: Record<string, any>;
     index: number;
 }
 
 import ZenDecoration from "./ZenDecoration.astro";
 
 const { type, data, index } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <div
@@ -43,7 +44,7 @@ const { type, data, index } = Astro.props;
         )
     }
 
-    {/* BLOG CELL */}
+    {/* BLOG CELL — navigates to /projects/[slug] */}
     {
         type === "blog" && (
             <>
@@ -53,24 +54,19 @@ const { type, data, index } = Astro.props;
                 >
                     <ZenDecoration type={data.decoration} />
                 </div>
-                {/* Image hidden as replaced by ZenDecoration
-                <img
-                    src={data.cover}
-                    alt={data.title}
-                    class="blog-image"
-                    loading="lazy"
-                />
-                */}
                 <div class="blog-overlay">
                     <h3 class="blog-title">{data.title}</h3>
                     <p class="blog-desc">{data.description}</p>
                 </div>
+                {/* Full-cell link overlay — semantic, accessible */}
+                <a
+                    href={`${baseUrl === '/' ? '' : baseUrl}/projects/${data.slug}`}
+                    class="cell-link-overlay"
+                    aria-label={`Ver proyecto: ${data.title}`}
+                />
             </>
         )
     }
-
-    {/* EMPTY CELL (placeholder) */}
-    {type === "easter" && <div class="cell-empty" />}
 
     {/* OPEN TO WORK CELL */}
     {
@@ -130,6 +126,9 @@ const { type, data, index } = Astro.props;
         )
     }
 
+    {/* EMPTY CELL */}
+    {type === "easter" && <div class="cell-empty" />}
+
     {/* SOCIAL CELL */}
     {
         type === "social" && (
@@ -138,7 +137,7 @@ const { type, data, index } = Astro.props;
                     <a
                         href={data.linkedin}
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="social-link"
                     >
                         LinkedIn
@@ -146,7 +145,7 @@ const { type, data, index } = Astro.props;
                     <a
                         href={data.github}
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="social-link"
                     >
                         GitHub
@@ -157,7 +156,7 @@ const { type, data, index } = Astro.props;
                     <a
                         href={data.x}
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="social-link"
                     >
                         X
@@ -169,6 +168,14 @@ const { type, data, index } = Astro.props;
 </div>
 
 <style>
+    /* Full-cell invisible link overlay for blog cells */
+    .cell-link-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        cursor: pointer;
+    }
+
     .cell-blog {
         cursor: pointer;
     }

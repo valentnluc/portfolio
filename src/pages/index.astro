@@ -3,13 +3,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import GridItem from "../components/GridItem.astro";
 import { getCollection } from "astro:content";
 
-import { marked } from "marked";
-
 // Get blog posts sorted by order (only 4 blogs)
 const blogs = await getCollection("projects");
-const sortedBlogs = blogs
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
+const sortedBlogs = blogs.sort((a, b) => a.data.order - b.data.order).slice(0, 4);
 
 // Zen decorations list
 const zenDecorations = [
@@ -27,21 +23,15 @@ const zenDecorations = [
   "breathing",
 ];
 
-// Prepare blog data with rendered content
-const blogItems = await Promise.all(
-  sortedBlogs.map(async (blog, i) => ({
-    type: "blog" as const,
-    data: {
-      ...blog.data,
-      slug: blog.slug,
-      content: (await marked.parse(blog.body)).replace(
-        /src="\/images\//g,
-        'src="/portfolio/images/',
-      ),
-      decoration: zenDecorations[i % zenDecorations.length],
-    },
-  })),
-);
+// Prepare blog data (no markdown parse needed — content lives in /projects/[slug])
+const blogItems = sortedBlogs.map((blog, i) => ({
+  type: "blog" as const,
+  data: {
+    ...blog.data,
+    slug: blog.slug,
+    decoration: zenDecorations[i % zenDecorations.length],
+  },
+}));
 
 // Static cells
 const nameCell = {
@@ -63,12 +53,6 @@ const socialCell = {
   },
 };
 
-// Empty cell placeholder
-const emptyCell = {
-  type: "easter" as const,
-  data: {},
-};
-
 // Open To Work cell
 const openToWorkCell = {
   type: "opentowork" as const,
@@ -79,7 +63,7 @@ const openToWorkCell = {
 const aboutCell = {
   type: "about" as const,
   data: {
-    text: "Analista de gestión en construcción. Uso programación y finanzas para tomar mejores decisiones, más rápido.",
+    text: "Analista de gestión en construcción. Integro programación, finanzas y análisis de datos para optimizar procesos y tomar decisiones más rápidas y precisas en entornos de obra.",
   },
 };
 
@@ -89,11 +73,7 @@ const projectsCell = {
   data: {},
 };
 
-// Build 4x3 grid (12 cells)
-// Row 1: name, otw, about, project
-// Row 2: blog0, blog1, blog2, blog3 (All blogs side by side)
-// Row 3: empty, empty, empty, social
-// Wide empty cell (placeholder for stack/etc)
+// Wide cell (spans 3 columns)
 const wideCell = {
   type: "stack" as const,
   data: {},
@@ -101,25 +81,25 @@ const wideCell = {
 
 // Build 4x3 grid (12 cells)
 // Row 1: name, otw, about, project
-// Row 2: blog0, blog1, blog2, blog3 (All blogs side by side)
+// Row 2: blog0, blog1, blog2, blog3
 // Row 3: wideCell (spans 3), social
 const gridCells = [
-  nameCell, // 0
-  openToWorkCell, // 1
-  aboutCell, // 2
-  projectsCell, // 3
+  nameCell,        // 0
+  openToWorkCell,  // 1
+  aboutCell,       // 2
+  projectsCell,    // 3
 
-  blogItems[0], // 4
-  blogItems[1], // 5
-  blogItems[2], // 6
-  blogItems[3], // 7
+  blogItems[0],    // 4
+  blogItems[1],    // 5
+  blogItems[2],    // 6
+  blogItems[3],    // 7
 
-  wideCell, // 8 (spans 3)
-  socialCell, // 11
+  wideCell,        // 8 (spans 3)
+  socialCell,      // 9
 ];
 ---
 
-<BaseLayout title="Valentin Lucarini." description="Portfolio">
+<BaseLayout title="Valentin Lucarini." description="Analista de gestión — Portfolio de proyectos de finanzas, construcción y análisis de datos.">
   <main class="bento-grid">
     {
       gridCells.map((cell, index) => (
@@ -128,109 +108,9 @@ const gridCells = [
     }
   </main>
 
-  <!-- Hidden modals for each blog -->
-  <div id="modal-container"></div>
-
-  <!-- Blog data for JS -->
-  <script
-    define:vars={{
-      blogData: blogItems.map((b) => ({
-        slug: b.data.slug,
-        title: b.data.title,
-        description: b.data.description,
-        content: b.data.content,
-      })),
-    }}
-  >
-    // Store blog data globally
-    window.__blogData = blogData;
-  </script>
-
+  <!-- ASCII Scramble + OTW Theme + Sequential Hover -->
   <script>
-    import vegaEmbed from "vega-embed";
-
-    // Handle blog cell clicks
-    document.querySelectorAll('[data-type="blog"]').forEach((cell) => {
-      cell.addEventListener("click", () => {
-        const slug = cell.getAttribute("data-slug");
-        const blog = window.__blogData.find((b) => b.slug === slug);
-
-        if (blog) {
-          openModal(blog);
-        }
-      });
-    });
-
-    async function openModal(blog) {
-      const container = document.getElementById("modal-container");
-
-      container.innerHTML = `
-        <div class="modal-overlay" id="modal-${blog.slug}">
-          <button class="modal-close">&times;</button>
-          <article class="modal-content">
-            <header class="modal-header">
-              <h2>${blog.title}</h2>
-              <p>${blog.description}</p>
-            </header>
-            <div class="modal-body">${blog.content}</div>
-          </article>
-        </div>
-      `;
-
-      // Render Vega Charts
-      const vegaBlocks = container.querySelectorAll("pre code.language-vega");
-      for (const block of vegaBlocks) {
-        try {
-          const spec = JSON.parse(block.textContent);
-          const div = document.createElement("div");
-          div.style.width = "100%";
-          div.style.display = "flex";
-          div.style.justifyContent = "center";
-
-          // Replace the <pre> tag (parent of code) with the new div
-          block.parentElement.replaceWith(div);
-
-          await vegaEmbed(div, spec, {
-            actions: false,
-            theme: "dark",
-            renderer: "svg",
-            config: {
-              background: "transparent",
-              style: {
-                "guide-label": { fill: "#f5f5f5" },
-                "guide-title": { fill: "#f5f5f5" },
-                "group-title": { fill: "#f5f5f5" },
-              },
-            },
-          });
-        } catch (e) {
-          console.error("Failed to render Vega chart", e);
-        }
-      }
-
-      // Add close handlers
-      const modal = container.querySelector(".modal-overlay");
-      const closeBtn = container.querySelector(".modal-close");
-
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) container.innerHTML = "";
-      });
-
-      closeBtn.addEventListener("click", () => {
-        container.innerHTML = "";
-      });
-
-      document.addEventListener("keydown", function escHandler(e) {
-        if (e.key === "Escape") {
-          container.innerHTML = "";
-          document.removeEventListener("keydown", escHandler);
-        }
-      });
-    }
-  </script>
-
-  <!-- ASCII Scramble Effect -->
-  <script>
+    // ── ASCII Scramble on name cell ───────────────────────────────
     const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!?<>[]{}";
 
     function scrambleText(element: HTMLElement, originalText: string) {
@@ -255,13 +135,10 @@ const gridCells = [
       return interval;
     }
 
-    // Apply to name and subtitle
     const nameCell = document.querySelector(".bento-cell.cell-name");
     const nameFirst = document.querySelector(".name-first") as HTMLElement;
     const nameLast = document.querySelector(".name-last") as HTMLElement;
-    const nameSubtitle = document.querySelector(
-      ".name-subtitle",
-    ) as HTMLElement;
+    const nameSubtitle = document.querySelector(".name-subtitle") as HTMLElement;
 
     if (nameCell && nameFirst && nameLast && nameSubtitle) {
       const originalFirst = nameFirst.textContent || "";
@@ -288,7 +165,7 @@ const gridCells = [
       });
     }
 
-    // Open To Work Theme Toggle
+    // ── Open To Work Theme Toggle ─────────────────────────────────
     const otwCell = document.querySelector(".cell-opentowork");
     if (otwCell) {
       otwCell.addEventListener("mouseenter", () => {
@@ -297,6 +174,43 @@ const gridCells = [
       otwCell.addEventListener("mouseleave", () => {
         document.body.classList.remove("theme-green");
       });
+    }
+
+    // ── Sequential pulse on project cell hover ────────────────────
+    const projectCell = document.querySelector(".cell-project");
+    const blogCells = Array.from(document.querySelectorAll('[data-type="blog"]'));
+
+    let pulseInterval: number | null = null;
+    let pulseIndex = 0;
+
+    function startSequentialPulse() {
+      stopSequentialPulse();
+      pulseIndex = 0;
+      blogCells[0]?.classList.add("blog-pulsed");
+
+      pulseInterval = window.setInterval(() => {
+        blogCells[pulseIndex]?.classList.remove("blog-pulsed");
+        pulseIndex++;
+        
+        if (pulseIndex >= blogCells.length) {
+          stopSequentialPulse();
+        } else {
+          blogCells[pulseIndex]?.classList.add("blog-pulsed");
+        }
+      }, 350);
+    }
+
+    function stopSequentialPulse() {
+      if (pulseInterval !== null) {
+        clearInterval(pulseInterval);
+        pulseInterval = null;
+      }
+      blogCells.forEach((c) => c.classList.remove("blog-pulsed"));
+    }
+
+    if (projectCell) {
+      projectCell.addEventListener("mouseenter", startSequentialPulse);
+      projectCell.addEventListener("mouseleave", stopSequentialPulse);
     }
   </script>
 </BaseLayout>

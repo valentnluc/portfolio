@@ -1,0 +1,873 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor de Precios (Restored)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <style>
+        :root {
+            --bg-page: #000000;
+            --bg-surface: #000000;
+            --text-main: #F9FAFB;
+            --border: #333333;
+            --accent: #F63366;
+        }
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .dashboard-container { width: 100%; max-width: 1200px; }
+        .card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            overflow-x: auto; 
+        }
+        header {
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+        h1 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+        .subtitle { color: #9CA3AF; font-size: 14px; margin-top: 4px; }
+        .legend { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; font-family: 'Inter', monospace; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        #vis { width: 100%; }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="card">
+        <header>
+            <h1>Monitor de Precios</h1>
+            <div class="subtitle">Comparativa de productos en tiempo real</div>
+            <div class="legend">
+                <span><span class="dot" style="background: #2563EB"></span>Mínimo</span>
+                <span><span class="dot" style="background: #DC2626"></span>Máximo</span>
+                <span><span class="dot" style="background: #9CA3AF"></span>Promedio (Gris)</span>
+            </div>
+        </header>
+        <div id="vis"></div>
+    </div>
+    <div style="text-align: right; margin-top: 10px; font-style: italic; color: #9CA3AF; font-size: 12px;">
+        Última actualización: 28/03/2026 13:06
+    </div>
+</div>
+<script>
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json",
+  "config": {
+    "background": "transparent",
+    "view": {
+      "continuousHeight": 300,
+      "continuousWidth": 300,
+      "stroke": "transparent"
+    }
+  },
+  "data": {
+    "name": "data-dee527be3ae9a14cf4764db322db9096"
+  },
+  "datasets": {
+    "data-dee527be3ae9a14cf4764db322db9096": [
+      {
+        "Category": "Aditivo Acelerante Frague Sin Cloruro 6 Kg",
+        "max": 48010.0,
+        "mean": 34224.0,
+        "min": 20438.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Aditivo Hidr\u00f3fugo x 20 Lts",
+        "max": 240.0,
+        "mean": 240.0,
+        "min": 240.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Bols\u00f3n De Arena Gruesa Especial 1,10 Tn.",
+        "max": 73919.0,
+        "mean": 38654.0,
+        "min": 21006.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Cal Hidratada x 25 Kg.",
+        "max": 10857.0,
+        "mean": 8386.0,
+        "min": 5720.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Cemento Alba\u00f1iler\u00eda x 25 Kg.",
+        "max": 6664.0,
+        "mean": 6664.0,
+        "min": 6664.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Cer\u00e1mico Brick Biselado Blanco 7,5 x 15",
+        "max": 464.0,
+        "mean": 464.0,
+        "min": 464.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Grifer\u00eda Monocomando Mesada",
+        "max": 151899.0,
+        "mean": 151899.0,
+        "min": 151899.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Guardacanto Marfil Stone 10mm x 10mm x 2.5m",
+        "max": 20564.0,
+        "mean": 20564.0,
+        "min": 20564.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Hierro Torsionado 10 mm x 12 m",
+        "max": 17864.0,
+        "mean": 14654.0,
+        "min": 11444.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Hierro Torsionado 25 mm x 12 m",
+        "max": 109406.0,
+        "mean": 89750.0,
+        "min": 70094.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Hierro Torsionado 6 mm x 12 m",
+        "max": 44760.0,
+        "mean": 24864.0,
+        "min": 6610.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Ladrillo HCCA 10 cm (Retak)",
+        "max": 8418.0,
+        "mean": 5445.0,
+        "min": 1347.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Ladrillo Hueco 12x18x33",
+        "max": 825.0,
+        "mean": 770.0,
+        "min": 715.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Ladrillo Portante 12x19x33",
+        "max": 1144.0,
+        "mean": 1124.0,
+        "min": 1105.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Ladrillo Tabique 8x18x33",
+        "max": 5262.0,
+        "mean": 1682.0,
+        "min": 723.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Pastina Cl\u00e1sica x 2 Kg.",
+        "max": 13914.0,
+        "mean": 9456.0,
+        "min": 5862.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Pegamento Impermeable x 25 Kg",
+        "max": 38772.0,
+        "mean": 25321.0,
+        "min": 11870.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Pegamento Impermeable x 25 Kg.",
+        "max": 34765.0,
+        "mean": 17936.0,
+        "min": 3558.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Pegamento Porcelanato Flex x 25 Kg.",
+        "max": 33958.0,
+        "mean": 23447.0,
+        "min": 12936.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Pegamento Porcelanato x 25 Kg",
+        "max": 30180.0,
+        "mean": 23188.0,
+        "min": 16195.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Revoque Fino a la Cal x 25 Kg.",
+        "max": 9886.0,
+        "mean": 5501.0,
+        "min": 1116.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      },
+      {
+        "Category": "Z\u00f3calo EPS Blanco Mate",
+        "max": 16133.0,
+        "mean": 13517.0,
+        "min": 10900.0,
+        "pct_change": 0.0,
+        "zero": 0.0
+      }
+    ]
+  },
+  "hconcat": [
+    {
+      "height": 1100,
+      "layer": [
+        {
+          "encoding": {
+            "x": {
+              "axis": null,
+              "field": "min",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "x2": {
+              "field": "max"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "color": "#333333",
+            "size": 3,
+            "type": "rule"
+          }
+        },
+        {
+          "encoding": {
+            "tooltip": [
+              {
+                "field": "Category",
+                "type": "nominal"
+              },
+              {
+                "field": "min",
+                "type": "quantitative"
+              }
+            ],
+            "x": {
+              "field": "min",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "color": "#2563EB",
+            "opacity": 1,
+            "size": 150,
+            "type": "circle"
+          },
+          "transform": [
+            {
+              "filter": "(datum.min !== datum.max)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "tooltip": [
+              {
+                "field": "Category",
+                "type": "nominal"
+              },
+              {
+                "field": "max",
+                "type": "quantitative"
+              }
+            ],
+            "x": {
+              "field": "max",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "color": "#DC2626",
+            "opacity": 1,
+            "size": 150,
+            "type": "circle"
+          },
+          "transform": [
+            {
+              "filter": "(datum.min !== datum.max)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "tooltip": [
+              {
+                "field": "Category",
+                "type": "nominal"
+              },
+              {
+                "field": "mean",
+                "type": "quantitative"
+              }
+            ],
+            "x": {
+              "field": "mean",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "color": "#9CA3AF",
+            "opacity": 0.9,
+            "size": 150,
+            "type": "circle"
+          }
+        },
+        {
+          "encoding": {
+            "text": {
+              "field": "min",
+              "format": "$,.0f",
+              "type": "quantitative"
+            },
+            "x": {
+              "field": "min",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "align": "right",
+            "color": "#2563EB",
+            "dx": -15,
+            "dy": 0,
+            "font": "Inter, sans-serif",
+            "fontSize": 11,
+            "type": "text"
+          },
+          "transform": [
+            {
+              "filter": "(datum.min !== datum.max)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "text": {
+              "field": "max",
+              "format": "$,.0f",
+              "type": "quantitative"
+            },
+            "x": {
+              "field": "max",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "align": "left",
+            "color": "#DC2626",
+            "dx": 15,
+            "dy": 0,
+            "font": "Inter, sans-serif",
+            "fontSize": 11,
+            "type": "text"
+          },
+          "transform": [
+            {
+              "filter": "(datum.min !== datum.max)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "text": {
+              "field": "mean",
+              "format": "$,.0f",
+              "type": "quantitative"
+            },
+            "x": {
+              "field": "mean",
+              "scale": {
+                "type": "log",
+                "zero": false
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": {
+                "domain": false,
+                "labelAlign": "left",
+                "labelColor": "#F9FAFB",
+                "labelFont": "Inter, sans-serif",
+                "labelFontSize": 13,
+                "labelLimit": 400,
+                "labelPadding": 300,
+                "offset": 0,
+                "tickSize": 0
+              },
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "title": null,
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "align": "center",
+            "color": "#9CA3AF",
+            "dx": 0,
+            "dy": -18,
+            "font": "Inter, sans-serif",
+            "fontSize": 11,
+            "type": "text"
+          }
+        }
+      ],
+      "title": {
+        "anchor": "middle",
+        "color": "#F9FAFB",
+        "font": "Inter, sans-serif",
+        "fontSize": 16,
+        "frame": "group",
+        "offset": 20,
+        "text": "Rango de Precios (Min/Max/Promedio)"
+      },
+      "width": 600
+    },
+    {
+      "height": 1100,
+      "layer": [
+        {
+          "encoding": {
+            "x": {
+              "axis": null,
+              "field": "zero",
+              "scale": {
+                "nice": true,
+                "padding": 0.2,
+                "zero": true
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": null,
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "color": "#333333",
+            "strokeDash": [
+              2,
+              2
+            ],
+            "type": "rule"
+          }
+        },
+        {
+          "encoding": {
+            "color": {
+              "condition": {
+                "test": "(datum.pct_change >= 0)",
+                "value": "#2563EB"
+              },
+              "value": "#DC2626"
+            },
+            "opacity": {
+              "condition": {
+                "test": "(datum.pct_change === 0)",
+                "value": 0
+              },
+              "value": 1
+            },
+            "x": {
+              "field": "pct_change",
+              "scale": {
+                "nice": true,
+                "padding": 0.2,
+                "zero": true
+              },
+              "type": "quantitative"
+            },
+            "x2": {
+              "field": "zero"
+            },
+            "y": {
+              "axis": null,
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "size": 4,
+            "type": "bar"
+          }
+        },
+        {
+          "encoding": {
+            "color": {
+              "value": "#2563EB"
+            },
+            "x": {
+              "field": "pct_change",
+              "scale": {
+                "nice": true,
+                "padding": 0.2,
+                "zero": true
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": null,
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "dx": 4,
+            "filled": true,
+            "opacity": 1,
+            "shape": "triangle-right",
+            "size": 60,
+            "type": "point"
+          },
+          "transform": [
+            {
+              "filter": "(datum.pct_change > 0)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "color": {
+              "value": "#DC2626"
+            },
+            "x": {
+              "field": "pct_change",
+              "scale": {
+                "nice": true,
+                "padding": 0.2,
+                "zero": true
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": null,
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "dx": -4,
+            "filled": true,
+            "opacity": 1,
+            "shape": "triangle-left",
+            "size": 60,
+            "type": "point"
+          },
+          "transform": [
+            {
+              "filter": "(datum.pct_change < 0)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "text": {
+              "field": "pct_change",
+              "format": "+.1%",
+              "type": "quantitative"
+            },
+            "x": {
+              "field": "pct_change",
+              "scale": {
+                "nice": true,
+                "padding": 0.2,
+                "zero": true
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": null,
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "align": "left",
+            "color": "#2563EB",
+            "dx": 12,
+            "font": "Inter, sans-serif",
+            "fontSize": 12,
+            "fontWeight": 600,
+            "type": "text"
+          },
+          "transform": [
+            {
+              "filter": "(datum.pct_change > 0)"
+            }
+          ]
+        },
+        {
+          "encoding": {
+            "text": {
+              "field": "pct_change",
+              "format": "+.1%",
+              "type": "quantitative"
+            },
+            "x": {
+              "field": "pct_change",
+              "scale": {
+                "nice": true,
+                "padding": 0.2,
+                "zero": true
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "axis": null,
+              "field": "Category",
+              "sort": {
+                "field": "mean",
+                "order": "ascending"
+              },
+              "type": "nominal"
+            }
+          },
+          "mark": {
+            "align": "right",
+            "color": "#DC2626",
+            "dx": -12,
+            "font": "Inter, sans-serif",
+            "fontSize": 12,
+            "fontWeight": 600,
+            "type": "text"
+          },
+          "transform": [
+            {
+              "filter": "(datum.pct_change < 0)"
+            }
+          ]
+        }
+      ],
+      "title": {
+        "anchor": "middle",
+        "color": "#F9FAFB",
+        "font": "Inter, sans-serif",
+        "fontSize": 16,
+        "frame": "group",
+        "offset": 20,
+        "text": "Variaci\u00f3n 30d (%)"
+      },
+      "width": 150
+    }
+  ]
+};
+    const opts = { renderer: 'svg', actions: false, theme: null };
+    vegaEmbed('#vis', spec, opts);
+</script>
+</body>
+</html>

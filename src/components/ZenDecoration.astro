@@ -489,17 +489,20 @@ const { type } = Astro.props;
     transition: all 0.5s ease;
   }
 
-  /* Container hover interaction (handled by parent or inherent) */
-  :global(.bento-cell:hover) .zen-decoration {
+  /* Container hover interaction */
+  :global(.bento-cell:hover) .zen-decoration,
+  :global(.bento-cell.blog-pulsed) .zen-decoration {
     opacity: 0.8;
   }
   
-  /* Color transition on hover */
-  :global(.bento-cell:hover) .zen-decoration {
+  /* Color transition on hover / pulse */
+  :global(.bento-cell:hover) .zen-decoration,
+  :global(.bento-cell.blog-pulsed) .zen-decoration {
       color: var(--blue);
   }
   /* Specific elements red/blue split */
-  :global(.bento-cell:hover) .zen-decoration svg {
+  :global(.bento-cell:hover) .zen-decoration svg,
+  :global(.bento-cell.blog-pulsed) .zen-decoration svg {
       filter: drop-shadow(0 0 1px var(--red));
   }
 
@@ -514,7 +517,8 @@ const { type } = Astro.props;
       transform-origin: 100px 100px;
       animation: rotate-slow 12s linear infinite;
   }
-  :global(.bento-cell:hover) .circles-group {
+  :global(.bento-cell:hover) .circles-group,
+  :global(.bento-cell.blog-pulsed) .circles-group {
       animation: rotate-fast 3s linear infinite;
   }
   

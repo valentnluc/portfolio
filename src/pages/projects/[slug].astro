@@ -1,0 +1,326 @@
+---
+import { getCollection } from "astro:content";
+import { marked } from "marked";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+    const projects = await getCollection("projects");
+    return projects.map((project) => ({
+        params: { slug: project.slug },
+        props: { project },
+    }));
+}
+
+const { project } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
+
+const content = (await marked.parse(project.body)).replace(
+    /src="\/images\//g,
+    `src="${baseUrl === '/' ? '' : baseUrl}/images/`,
+);
+---
+
+<BaseLayout
+    title={`${project.data.title} — Valentin Lucarini`}
+    description={project.data.description}
+>
+    <div class="project-page">
+        <nav class="project-nav">
+            <a href={baseUrl} class="back-btn">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Volver
+            </a>
+        </nav>
+
+        <article class="project-article">
+            <header class="article-header">
+                <p class="article-tag">PROYECTO</p>
+                <h1 class="article-title">{project.data.title}</h1>
+                <p class="article-description">{project.data.description}</p>
+                <hr class="article-divider" />
+            </header>
+            <div class="project-body" set:html={content} />
+        </article>
+    </div>
+
+    <script>
+        import vegaEmbed from "vega-embed";
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const vegaBlocks = document.querySelectorAll(
+                "pre code.language-vega",
+            );
+            for (const block of vegaBlocks) {
+                try {
+                    const spec = JSON.parse(block.textContent || "");
+                    const div = document.createElement("div");
+                    div.style.width = "100%";
+                    div.style.display = "flex";
+                    div.style.justifyContent = "center";
+                    block.parentElement?.replaceWith(div);
+                    await vegaEmbed(div, spec, {
+                        actions: false,
+                        theme: "dark",
+                        renderer: "svg",
+                        config: {
+                            background: "transparent",
+                            style: {
+                                "guide-label": { fill: "#f5f5f5" },
+                                "guide-title": { fill: "#f5f5f5" },
+                                "group-title": { fill: "#f5f5f5" },
+                            },
+                        },
+                    });
+                } catch (e) {
+                    console.error("Failed to render Vega chart", e);
+                }
+            }
+        });
+    </script>
+</BaseLayout>
+
+<style>
+    .project-page {
+        min-height: 100vh;
+        background: var(--black);
+    }
+
+    /* Fixed top nav with back button */
+    .project-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        padding: 1.5rem 2rem;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.95) 0%,
+            transparent 100%
+        );
+        pointer-events: none;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: rgba(245, 245, 245, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        pointer-events: all;
+    }
+
+    .back-btn:hover {
+        color: var(--white);
+    }
+
+    .back-btn svg {
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .back-btn:hover svg {
+        transform: translateX(-4px);
+    }
+
+    /* Article content area */
+    .project-article {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 8rem 2rem 8rem;
+    }
+
+    .article-tag {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        color: var(--blue);
+        margin-bottom: 1.25rem;
+        text-transform: uppercase;
+    }
+
+    .article-title {
+        font-size: clamp(2rem, 5vw, 3.25rem);
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        color: var(--white);
+        margin-bottom: 1rem;
+    }
+
+    .article-description {
+        font-size: 1rem;
+        color: rgba(245, 245, 245, 0.45);
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+    }
+
+    .article-divider {
+        border: none;
+        border-top: 1px solid rgba(245, 245, 245, 0.1);
+        margin-bottom: 3rem;
+    }
+
+    /* ── Markdown body ─────────────────────────────── */
+
+    .project-body {
+        font-size: 1rem;
+        line-height: 1.85;
+        color: rgba(245, 245, 245, 0.8);
+    }
+
+    .project-body :global(h1),
+    .project-body :global(h2),
+    .project-body :global(h3) {
+        color: var(--white);
+        margin-top: 2.5rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+    }
+
+    .project-body :global(h2) {
+        font-size: 1.35rem;
+        letter-spacing: -0.01em;
+    }
+
+    .project-body :global(h3) {
+        font-size: 1.05rem;
+        color: rgba(245, 245, 245, 0.9);
+    }
+
+    .project-body :global(p) {
+        margin-bottom: 1.25rem;
+    }
+
+    .project-body :global(strong) {
+        color: var(--white);
+        font-weight: 600;
+    }
+
+    .project-body :global(em) {
+        color: rgba(245, 245, 245, 0.65);
+    }
+
+    .project-body :global(a) {
+        color: var(--blue);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+    }
+
+    .project-body :global(a:hover) {
+        border-color: var(--blue);
+    }
+
+    .project-body :global(code) {
+        background: rgba(245, 245, 245, 0.07);
+        padding: 0.15em 0.45em;
+        border-radius: 4px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.85em;
+        color: rgba(245, 245, 245, 0.9);
+    }
+
+    .project-body :global(pre) {
+        background: rgba(245, 245, 245, 0.04);
+        border: 1px solid rgba(245, 245, 245, 0.08);
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+    }
+
+    .project-body :global(pre code) {
+        background: none;
+        padding: 0;
+        border-radius: 0;
+        font-size: 0.875rem;
+    }
+
+    .project-body :global(blockquote) {
+        border-left: 2px solid var(--red);
+        padding-left: 1.25rem;
+        margin: 1.5rem 0;
+        color: rgba(245, 245, 245, 0.55);
+        font-style: italic;
+    }
+
+    .project-body :global(ul),
+    .project-body :global(ol) {
+        padding-left: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .project-body :global(li) {
+        margin-bottom: 0.45rem;
+    }
+
+    .project-body :global(hr) {
+        border: none;
+        border-top: 1px solid rgba(245, 245, 245, 0.08);
+        margin: 2.5rem 0;
+    }
+
+    .project-body :global(img) {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 2rem auto;
+        display: block;
+        opacity: 0.9;
+    }
+
+    /* CTA button from montecarlo.md */
+    .project-body :global(.dashboard-btn-container) {
+        display: flex;
+        justify-content: center;
+        margin: 2.5rem 0;
+    }
+
+    .project-body :global(.dashboard-btn) {
+        display: inline-block;
+        padding: 0.875rem 2.25rem;
+        background: var(--blue);
+        color: var(--white);
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-bottom: none !important;
+        transition: all 0.3s ease;
+    }
+
+    .project-body :global(.dashboard-btn:hover) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 85, 255, 0.35);
+        border-bottom: none !important;
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+        .project-article {
+            padding: 7rem 1.25rem 5rem;
+        }
+    }
+</style>
